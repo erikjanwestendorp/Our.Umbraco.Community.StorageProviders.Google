@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.Community.StorageProviders.Google.Site", "Our.Umbraco.Community.StorageProviders.Google.Site\Our.Umbraco.Community.StorageProviders.Google.Site.csproj", "{FFE65AD8-5736-4BB3-A6CA-51F138B85CAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.Community.StorageProviders.GoogleCloud", "Our.Umbraco.Community.StorageProviders.Google\Our.Umbraco.Community.StorageProviders.GoogleCloud.csproj", "{A7EB31F4-0D72-453D-A3B5-FC41ECC9CD45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.Community.StorageProviders.GoogleCloud", "Our.Umbraco.Community.StorageProviders.GoogleCloud\Our.Umbraco.Community.StorageProviders.GoogleCloud.csproj", "{A7EB31F4-0D72-453D-A3B5-FC41ECC9CD45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
