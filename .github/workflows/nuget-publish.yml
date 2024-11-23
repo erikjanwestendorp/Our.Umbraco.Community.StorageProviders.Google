@@ -1,0 +1,33 @@
+name: Publish Alpha to NuGet
+
+on:
+  push:
+    tags:
+      - '*-alpha*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore ./src/Our.Umbraco.Community.StorageProviders.GoogleCloud/Our.Umbraco.Community.StorageProviders.GoogleCloud.csproj
+
+    - name: Build project
+      run: dotnet build ./src/Our.Umbraco.Community.StorageProviders.GoogleCloud/Our.Umbraco.Community.StorageProviders.GoogleCloud.csproj --configuration Release --no-restore
+
+    - name: Pack project
+      run: dotnet pack ./src/Our.Umbraco.Community.StorageProviders.GoogleCloud/Our.Umbraco.Community.StorageProviders.GoogleCloud.csproj --configuration Release --no-build --output ./nupkg
+
+    - name: Publish to NuGet
+      run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      env:
+        NUGET_API_KEY: ${{secrets.NUGET_API_KEY}}
