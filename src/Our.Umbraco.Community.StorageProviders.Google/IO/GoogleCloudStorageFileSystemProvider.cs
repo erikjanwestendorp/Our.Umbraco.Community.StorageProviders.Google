@@ -5,7 +5,8 @@ using Microsoft.Extensions.Options;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
 
-namespace Our.Umbraco.Community.StorageProviders.Google.IO;
+namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
+
 /// <inheritdoc />
 public sealed class GoogleCloudStorageFileSystemProvider : IGoogleCloudStorageFileSystemProvider
 {
@@ -29,19 +30,17 @@ public sealed class GoogleCloudStorageFileSystemProvider : IGoogleCloudStorageFi
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        //TODO MAKE an APP SETTING
-        // TODO WHY TWO TIMES OPTIONS???
-        GoogleCloudStorageFileSystemOptions optionss = _optionsMonitor.Get(name);
+        GoogleCloudStorageFileSystemOptions googleCloudStorageFileSystemOptions = _optionsMonitor.Get(name);
 
         GoogleCredential credential;
-        using (var jsonStream = new FileStream(optionss.CredentialPath, FileMode.Open, FileAccess.Read))
+        using (var jsonStream = new FileStream(googleCloudStorageFileSystemOptions.CredentialPath, FileMode.Open, FileAccess.Read))
         {
             credential = GoogleCredential.FromStream(jsonStream);
         }
 
         return _fileSystems.GetOrAdd(name, name =>
         {
-            GoogleCloudStorageFileSystemOptions options = _optionsMonitor.Get(name);
+            GoogleCloudStorageFileSystemOptions options = googleCloudStorageFileSystemOptions;
             return new GoogleCloudStorageFileSystem(options, credential, _hostingEnvironment, _ioHelper, _fileExtensionContentTypeProvider, _optionsMonitor);
         });
     }

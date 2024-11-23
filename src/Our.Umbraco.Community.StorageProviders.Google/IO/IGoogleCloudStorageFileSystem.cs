@@ -1,7 +1,8 @@
 ﻿using Google.Cloud.Storage.V1;
 using Umbraco.Cms.Core.IO;
 
-namespace Our.Umbraco.Community.StorageProviders.Google.IO;
+namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
+
 /// <summary>
 /// Represents a Google Cloud Storage file system.
 /// </summary>
