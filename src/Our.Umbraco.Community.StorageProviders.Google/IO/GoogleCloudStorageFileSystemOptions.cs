@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Our.Umbraco.Community.StorageProviders.Google.IO;
+namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
+
 /// <summary>
 /// The Google Cloud Storage File System options.
 /// </summary>
