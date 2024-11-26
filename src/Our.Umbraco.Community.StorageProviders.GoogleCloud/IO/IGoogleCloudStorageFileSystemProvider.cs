@@ -1,4 +1,8 @@
-﻿namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
+﻿// This code is adapted from the Umbraco.StorageProviders project.
+// Original source: https://github.com/umbraco/Umbraco.StorageProviders/blob/develop/src/Umbraco.StorageProviders.AzureBlob/IO/IAzureBlobFileSystemProvider.cs
+// Adapted and modified in accordance with the terms of the MIT License.
+
+namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 
 /// <summary>
 /// The Google Cloud file system provider

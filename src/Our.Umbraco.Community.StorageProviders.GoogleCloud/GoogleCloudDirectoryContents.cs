@@ -1,4 +1,8 @@
-﻿using Google.Cloud.Storage.V1;
+﻿// This code is adapted from the Umbraco.StorageProviders project.
+// Original source: https://github.com/umbraco/Umbraco.StorageProviders/blob/develop/src/Umbraco.StorageProviders.AzureBlob/AzureBlobDirectoryContents.cs
+// Adapted and modified in accordance with the terms of the MIT License.
+
+using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.FileProviders;
 using System.Collections;
 

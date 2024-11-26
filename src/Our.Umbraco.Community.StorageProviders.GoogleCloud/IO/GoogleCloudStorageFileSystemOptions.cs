@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// This code is adapted from the Umbraco.StorageProviders project.
+// Original source: https://github.com/umbraco/Umbraco.StorageProviders/blob/develop/src/Umbraco.StorageProviders.AzureBlob/IO/AzureBlobFileSystemOptions.cs
+// Adapted and modified in accordance with the terms of the MIT License.
+
+using System.ComponentModel.DataAnnotations;
 
 namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 
