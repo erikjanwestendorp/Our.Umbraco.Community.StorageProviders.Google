@@ -1,4 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿// This code is adapted from the Umbraco.StorageProviders project.
+// Original source: https://github.com/umbraco/Umbraco.StorageProviders/blob/develop/src/Umbraco.StorageProviders.AzureBlob/IO/AzureBlobFileSystemProvider.cs
+// Adapted and modified in accordance with the terms of the MIT License.
+
+using System.Collections.Concurrent;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;

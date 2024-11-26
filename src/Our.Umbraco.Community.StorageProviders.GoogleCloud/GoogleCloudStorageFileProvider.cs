@@ -1,4 +1,8 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿// This code is adapted from the Umbraco.StorageProviders project.
+// Original source: https://github.com/umbraco/Umbraco.StorageProviders/blob/develop/src/Umbraco.StorageProviders.AzureBlob/AzureBlobFileProvider.cs
+// Adapted and modified in accordance with the terms of the MIT License.
+
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;

@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿// This code is adapted from the Umbraco.StorageProviders project.
+// Original source: https://github.com/umbraco/Umbraco.StorageProviders/blob/develop/src/Umbraco.StorageProviders.AzureBlob/DependencyInjection/AzureBlobMediaFileSystemExtensions.cs
+// Adapted and modified in accordance with the terms of the MIT License.
+
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 using Umbraco.Cms.Core.Configuration.Models;
