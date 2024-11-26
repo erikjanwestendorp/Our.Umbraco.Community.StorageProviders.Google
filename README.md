@@ -49,7 +49,10 @@ Once the configuration is set up, the storage provider will automatically use Go
 Contributions are welcome! If you encounter bugs, have feature requests, or want to improve the code, feel free to open an issue or submit a pull request.
 
 ## License
-This project is licensed under the MIT License. See the LICENSE file for more details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+Acknowledgments
+This project is based on the [Umbraco.StorageProviders](https://github.com/umbraco/Umbraco.StorageProviders/) repository. Portions of the code were adapted under the MIT License.
 
 ## Support
 If you have questions or need assistance, please create an issue on the issue tracker.
