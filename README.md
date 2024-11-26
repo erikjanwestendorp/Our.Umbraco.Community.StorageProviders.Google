@@ -51,7 +51,7 @@ Contributions are welcome! If you encounter bugs, have feature requests, or want
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-Acknowledgments
+## Acknowledgments
 This project is based on the [Umbraco.StorageProviders](https://github.com/umbraco/Umbraco.StorageProviders/) repository. Portions of the code were adapted under the MIT License.
 
 ## Support
