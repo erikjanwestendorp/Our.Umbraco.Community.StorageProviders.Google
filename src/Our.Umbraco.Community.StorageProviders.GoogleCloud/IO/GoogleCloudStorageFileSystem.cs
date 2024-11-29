@@ -41,7 +41,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     { }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AzureBlobFileSystem"/> class.
+    /// Initializes a new instance of the <see cref="GoogleCloudStorageFileSystem"/> class.
     /// </summary>
     /// <param name="requestRootPath">The request/URL root path.</param>
     /// <param name="blobContainerClient">The blob container client.</param>
