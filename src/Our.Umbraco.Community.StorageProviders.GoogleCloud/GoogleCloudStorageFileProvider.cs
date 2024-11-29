@@ -8,6 +8,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.Extensions;
+using Our.Umbraco.Community.StorageProviders.GoogleCloud.Helpers;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 using Umbraco.Cms.Core;
 using Umbraco.Extensions;
@@ -38,7 +39,6 @@ public sealed class GoogleCloudStorageFileProvider : IFileProvider
         _credential = credential;
         _containerRootPath = containerRootPath?.Trim(Constants.CharArrays.ForwardSlash);
         _optionsMonitor = optionsMonitor;
-
     }
 
     /// <inheritdoc />
@@ -63,15 +63,12 @@ public sealed class GoogleCloudStorageFileProvider : IFileProvider
         subpath = subpath.RemoveFirstIfEquals('/');
 
         var name = GoogleCloudStorageFileSystemOptions.MediaFileSystemName;
-        GoogleCloudStorageFileSystemOptions optionss = _optionsMonitor.Get(name);
+        GoogleCloudStorageFileSystemOptions options = _optionsMonitor.Get(name);
 
-        GoogleCredential credential;
-        using (var jsonStream = new FileStream(optionss.CredentialPath, FileMode.Open, FileAccess.Read))
-        {
-            credential = GoogleCredential.FromStream(jsonStream);
-        }
+        GoogleCredential credential = GoogleCloudCredentialHelper.LoadCredential(options.CredentialPath);
 
         StorageClient storageClient = StorageClient.Create(credential);
+
         var obj = storageClient.GetObject(_bucketName, subpath);
         return new GoogleCloudStorageItemInfo(_storageClient, _bucketName, obj);
     }

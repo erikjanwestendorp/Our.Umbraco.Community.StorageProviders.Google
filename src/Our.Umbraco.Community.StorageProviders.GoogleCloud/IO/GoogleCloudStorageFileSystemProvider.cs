@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
+using Our.Umbraco.Community.StorageProviders.GoogleCloud.Helpers;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
 
@@ -35,13 +36,8 @@ public sealed class GoogleCloudStorageFileSystemProvider : IGoogleCloudStorageFi
         ArgumentNullException.ThrowIfNull(name);
 
         GoogleCloudStorageFileSystemOptions googleCloudStorageFileSystemOptions = _optionsMonitor.Get(name);
-
-        GoogleCredential credential;
-        using (var jsonStream = new FileStream(googleCloudStorageFileSystemOptions.CredentialPath, FileMode.Open, FileAccess.Read))
-        {
-            credential = GoogleCredential.FromStream(jsonStream);
-        }
-
+        GoogleCredential credential = GoogleCloudCredentialHelper.LoadCredential(googleCloudStorageFileSystemOptions.CredentialPath);
+        
         return _fileSystems.GetOrAdd(name, name => new GoogleCloudStorageFileSystem(googleCloudStorageFileSystemOptions, credential, _hostingEnvironment, _ioHelper, _fileExtensionContentTypeProvider, _optionsMonitor));
     }
 }
