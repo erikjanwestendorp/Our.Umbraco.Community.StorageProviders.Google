@@ -29,6 +29,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     /// Initializes a new instance of the <see cref="GoogleCloudStorageFileSystem"/> class.
     /// </summary>
     /// <param name="options">The Azure Blob File System options.</param>
+    /// <param name="credential">The Google credential used for authenticating requests to Google Cloud Storage.</param>
     /// <param name="hostingEnvironment">The hosting environment.</param>
     /// <param name="ioHelper">The I/O helper.</param>
     /// <param name="contentTypeProvider">The content type provider.</param>
