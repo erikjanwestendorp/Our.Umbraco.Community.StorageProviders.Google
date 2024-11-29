@@ -42,10 +42,6 @@ public sealed class GoogleCloudStorageFileSystemProvider : IGoogleCloudStorageFi
             credential = GoogleCredential.FromStream(jsonStream);
         }
 
-        return _fileSystems.GetOrAdd(name, name =>
-        {
-            GoogleCloudStorageFileSystemOptions options = googleCloudStorageFileSystemOptions;
-            return new GoogleCloudStorageFileSystem(options, credential, _hostingEnvironment, _ioHelper, _fileExtensionContentTypeProvider, _optionsMonitor);
-        });
+        return _fileSystems.GetOrAdd(name, name => new GoogleCloudStorageFileSystem(googleCloudStorageFileSystemOptions, credential, _hostingEnvironment, _ioHelper, _fileExtensionContentTypeProvider, _optionsMonitor));
     }
 }

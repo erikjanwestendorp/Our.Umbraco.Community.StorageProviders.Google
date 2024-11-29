@@ -16,22 +16,22 @@ namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem, IFileProviderFactory
 {
     private readonly string _requestRootPath;
-    private readonly string _bucketRootPath;
     private readonly StorageClient _storageClient;
     private readonly string _bucketName;
     private readonly GoogleCredential _credential;
 
     private readonly IIOHelper _ioHelper;
-    private readonly IContentTypeProvider _contentTypeProvider;
     private readonly IOptionsMonitor<GoogleCloudStorageFileSystemOptions> _optionsMonitor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GoogleCloudStorageFileSystem"/> class.
     /// </summary>
     /// <param name="options">The Azure Blob File System options.</param>
+    /// <param name="credential">The Google credential used for authenticating requests to Google Cloud Storage.</param>
     /// <param name="hostingEnvironment">The hosting environment.</param>
     /// <param name="ioHelper">The I/O helper.</param>
     /// <param name="contentTypeProvider">The content type provider.</param>
+    /// <param name="optionsMonitor">A monitor to track changes to the <see cref="GoogleCloudStorageFileSystemOptions"/> configuration at runtime.</param>
     /// <exception cref="System.ArgumentNullException"><paramref name="options" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="hostingEnvironment" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="ioHelper" /> is <c>null</c>.</exception>
@@ -41,15 +41,14 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     { }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AzureBlobFileSystem"/> class.
+    /// Initializes a new instance of the <see cref="GoogleCloudStorageFileSystem"/> class.
     /// </summary>
     /// <param name="requestRootPath">The request/URL root path.</param>
-    /// <param name="blobContainerClient">The blob container client.</param>
+    /// <param name="credential">The Google credential used for authenticating requests to Google Cloud Storage.</param>
     /// <param name="ioHelper">The I/O helper.</param>
     /// <param name="contentTypeProvider">The content type provider.</param>
-    /// <param name="containerRootPath">The container root path (uses the request/URL root path if not set).</param>
+    /// <param name="optionsMonitor">A monitor to track changes to the <see cref="GoogleCloudStorageFileSystemOptions"/> configuration at runtime.</param>
     /// <exception cref="System.ArgumentNullException"><paramref name="requestRootPath" /> is <c>null</c>.</exception>
-    /// <exception cref="System.ArgumentNullException"><paramref name="blobContainerClient" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="ioHelper" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="contentTypeProvider" /> is <c>null</c>.</exception>
     public GoogleCloudStorageFileSystem(string requestRootPath, GoogleCredential credential, string bucketName, IIOHelper ioHelper, IContentTypeProvider contentTypeProvider, IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor, string? bucketRootPath = null)
@@ -62,11 +61,9 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
 
         _credential = credential;
         _requestRootPath = EnsureUrlSeparatorChar(requestRootPath).TrimEnd('/');
-        _bucketRootPath = bucketRootPath ?? _requestRootPath;
         _storageClient = StorageClient.Create(credential);
         _bucketName = bucketName;
         _ioHelper = ioHelper;
-        _contentTypeProvider = contentTypeProvider;
         _optionsMonitor = optionsMonitor;
     }
     /// <inheritdoc />
