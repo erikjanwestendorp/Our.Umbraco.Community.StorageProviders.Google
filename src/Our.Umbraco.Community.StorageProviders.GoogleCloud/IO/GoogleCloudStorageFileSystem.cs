@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.Helpers;
+using System.IO;
+using Microsoft.Extensions.Logging;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
 
@@ -70,6 +72,46 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     /// <inheritdoc />
     public bool CanAddPhysical => false;
 
+
+    /// <summary>
+    /// Ensures that a specified Google Cloud Storage bucket exists. 
+    /// If the bucket does not exist, it creates the bucket in the specified project.
+    /// </summary>
+    /// <param name="options">Configuration options containing the bucket name and project ID.</param>
+    /// <param name="logger">An <see cref="ILogger"/> instance for logging information and errors.</param>
+    /// <exception cref="System.ArgumentNullException"><paramref name="options" /> is <c>null</c>.</exception>
+    /// <exception cref="System.ArgumentNullException"><paramref name="options.BucketName" /> is <c>null</c>.</exception>
+    /// <exception cref="System.ArgumentNullException"><paramref name="options.ProjectId" /> is <c>null</c>.</exception>
+    /// <exception cref="System.ArgumentNullException"><paramref name="logger" /> is <c>null</c>.</exception>
+    /// <exception cref="Google.GoogleApiException"> Thrown if there is an error retrieving or creating the bucket. </exception>
+    public static void CreateIfNotExists(GoogleCloudStorageFileSystemOptions options, ILogger<GoogleCloudStorageFileSystem> logger)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(options.BucketName);
+        ArgumentNullException.ThrowIfNull(options.ProjectId);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        var storageClient = StorageClient.Create();
+
+        try
+        {
+            var bucket = storageClient.GetBucket(options.BucketName);
+            logger.LogInformation("Bucket {Name} already exists.", bucket.Name);
+        }
+        catch (Google.GoogleApiException ex) when (ex.Error.Code == 404)
+        {
+            try
+            {
+                var newBucket = storageClient.CreateBucket(options.ProjectId, options.BucketName);
+                logger.LogInformation("Bucket {Name} created successfully.", newBucket.Name);
+
+            }
+            catch (Exception createEx)
+            {
+                logger.LogError("Error creating bucket: {Message}", createEx.Message);
+            }
+        }
+    }
 
     /// <inheritdoc />
     /// <exception cref="System.ArgumentNullException"><paramref name="path" /> is <c>null</c>.</exception>

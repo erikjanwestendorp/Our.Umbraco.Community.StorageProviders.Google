@@ -29,6 +29,12 @@ public sealed class GoogleCloudStorageFileSystemOptions
     public required string BucketName { get; set; }
 
     /// <summary>
+    /// Gets or sets the project id
+    /// </summary>
+    [Required]
+    public required string ProjectId { get; set; }
+
+    /// <summary>
     /// Gets or sets the root path of the container.
     /// </summary>
     public string? ContainerRootPath { get; set; }
