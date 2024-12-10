@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.Helpers;
-using System.IO;
 using Microsoft.Extensions.Logging;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
@@ -21,7 +20,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     private readonly string _requestRootPath;
     private readonly StorageClient _storageClient;
     private readonly string _bucketName;
-    private readonly GoogleCredential _credential;
+    //private readonly GoogleCredential _credential;
 
     private readonly IIOHelper _ioHelper;
     private readonly IOptionsMonitor<GoogleCloudStorageFileSystemOptions> _optionsMonitor;
@@ -30,7 +29,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     /// Initializes a new instance of the <see cref="GoogleCloudStorageFileSystem"/> class.
     /// </summary>
     /// <param name="options">The Azure Blob File System options.</param>
-    /// <param name="credential">The Google credential used for authenticating requests to Google Cloud Storage.</param>
+    /// <param name="storageClient">The storage client.</param>
     /// <param name="hostingEnvironment">The hosting environment.</param>
     /// <param name="ioHelper">The I/O helper.</param>
     /// <param name="contentTypeProvider">The content type provider.</param>
@@ -39,32 +38,31 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     /// <exception cref="System.ArgumentNullException"><paramref name="hostingEnvironment" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="ioHelper" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="contentTypeProvider" /> is <c>null</c>.</exception>
-    public GoogleCloudStorageFileSystem(GoogleCloudStorageFileSystemOptions options, GoogleCredential credential, IHostingEnvironment hostingEnvironment, IIOHelper ioHelper, IContentTypeProvider contentTypeProvider, IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor)
-        : this(GetRequestRootPath(options, hostingEnvironment), credential, options.BucketName, ioHelper, contentTypeProvider, optionsMonitor, null) //TODO FIX NULL
+    public GoogleCloudStorageFileSystem(GoogleCloudStorageFileSystemOptions options, StorageClient storageClient, IHostingEnvironment hostingEnvironment, IIOHelper ioHelper, IContentTypeProvider contentTypeProvider, IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor)
+        : this(GetRequestRootPath(options, hostingEnvironment), storageClient, options.BucketName, ioHelper, contentTypeProvider, optionsMonitor, null) //TODO FIX NULL
     { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GoogleCloudStorageFileSystem"/> class.
     /// </summary>
     /// <param name="requestRootPath">The request/URL root path.</param>
-    /// <param name="credential">The Google credential used for authenticating requests to Google Cloud Storage.</param>
+    /// <param name="storageClient">The storage client.</param>
     /// <param name="ioHelper">The I/O helper.</param>
     /// <param name="contentTypeProvider">The content type provider.</param>
     /// <param name="optionsMonitor">A monitor to track changes to the <see cref="GoogleCloudStorageFileSystemOptions"/> configuration at runtime.</param>
     /// <exception cref="System.ArgumentNullException"><paramref name="requestRootPath" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="ioHelper" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="contentTypeProvider" /> is <c>null</c>.</exception>
-    public GoogleCloudStorageFileSystem(string requestRootPath, GoogleCredential credential, string bucketName, IIOHelper ioHelper, IContentTypeProvider contentTypeProvider, IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor, string? bucketRootPath = null)
+    public GoogleCloudStorageFileSystem(string requestRootPath, StorageClient storageClient, string bucketName, IIOHelper ioHelper, IContentTypeProvider contentTypeProvider, IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor, string? bucketRootPath = null)
     {
         ArgumentNullException.ThrowIfNull(requestRootPath);
-        ArgumentNullException.ThrowIfNull(credential);
+        ArgumentNullException.ThrowIfNull(storageClient);
         ArgumentNullException.ThrowIfNull(bucketName);
         ArgumentNullException.ThrowIfNull(ioHelper);
         ArgumentNullException.ThrowIfNull(contentTypeProvider);
 
-        _credential = credential;
         _requestRootPath = EnsureUrlSeparatorChar(requestRootPath).TrimEnd('/');
-        _storageClient = StorageClient.Create(credential);
+        _storageClient = storageClient;
         _bucketName = bucketName;
         _ioHelper = ioHelper;
         _optionsMonitor = optionsMonitor;
@@ -369,7 +367,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
 
     /// <inheritdoc />
     //public IFileProvider Create() => throw new NotImplementedException();
-    public IFileProvider Create() => new GoogleCloudStorageFileProvider(_credential, _bucketName, _optionsMonitor, "/"); //TODO USE OPTIONS for root path?
+    public IFileProvider Create() => new GoogleCloudStorageFileProvider(_storageClient, _optionsMonitor, "/"); //TODO USE OPTIONS for root path?
 
     private static string GetRequestRootPath(GoogleCloudStorageFileSystemOptions options, IHostingEnvironment hostingEnvironment)
     {
