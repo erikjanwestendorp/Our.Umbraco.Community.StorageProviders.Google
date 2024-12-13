@@ -15,9 +15,8 @@ public interface IGoogleCloudStorageFileSystem : IFileSystem
     /// <summary>
     /// Get the <see cref="StorageClient" />.
     /// </summary>
-    /// <param name="path">The relative path to the storage.</param>
     /// <returns>
     /// A <see cref="StorageClient" />.
     /// </returns>
-    StorageClient GetStorageClient(string path);
+    StorageClient GetStorageClient();
 }

@@ -3,11 +3,10 @@
 // Adapted and modified in accordance with the terms of the MIT License.
 
 using System.Collections.Concurrent;
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
-using Our.Umbraco.Community.StorageProviders.GoogleCloud.Helpers;
+using Our.Umbraco.Community.StorageProviders.GoogleCloud.Services;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
 
@@ -21,12 +20,14 @@ public sealed class GoogleCloudStorageFileSystemProvider : IGoogleCloudStorageFi
     private readonly IHostingEnvironment _hostingEnvironment;
     private readonly IIOHelper _ioHelper;
     private readonly FileExtensionContentTypeProvider _fileExtensionContentTypeProvider;
+    private readonly GoogleCloudStorageService _googleCloudStorageService;
 
-    public GoogleCloudStorageFileSystemProvider(IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor, IHostingEnvironment hostingEnvironment, IIOHelper ioHelper)
+    public GoogleCloudStorageFileSystemProvider(IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor, IHostingEnvironment hostingEnvironment, IIOHelper ioHelper, GoogleCloudStorageService googleCloudStorageService)
     {
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
         _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
         _ioHelper = ioHelper ?? throw new ArgumentNullException(nameof(ioHelper));
+        _googleCloudStorageService = googleCloudStorageService;
         _fileExtensionContentTypeProvider = new FileExtensionContentTypeProvider();
 
         _optionsMonitor.OnChange((options, name) => _fileSystems.TryRemove(name ?? Options.DefaultName, out _));
@@ -36,9 +37,14 @@ public sealed class GoogleCloudStorageFileSystemProvider : IGoogleCloudStorageFi
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        GoogleCloudStorageFileSystemOptions googleCloudStorageFileSystemOptions = _optionsMonitor.Get(name);
-        GoogleCredential credential = GoogleCloudCredentialHelper.LoadCredential(googleCloudStorageFileSystemOptions.CredentialPath);
-        var storageClient = StorageClient.Create();
-        return _fileSystems.GetOrAdd(name, name => new GoogleCloudStorageFileSystem(googleCloudStorageFileSystemOptions, storageClient, _hostingEnvironment, _ioHelper, _fileExtensionContentTypeProvider, _optionsMonitor));
+        var googleCloudStorageFileSystemOptions = _optionsMonitor.Get(name);
+        var storageClient = _googleCloudStorageService.GetStorageClient();
+
+        return _fileSystems.GetOrAdd(name, name => 
+            new GoogleCloudStorageFileSystem(
+                googleCloudStorageFileSystemOptions, 
+                storageClient, 
+                _hostingEnvironment, 
+                _ioHelper, _fileExtensionContentTypeProvider, _optionsMonitor));
     }
 }
