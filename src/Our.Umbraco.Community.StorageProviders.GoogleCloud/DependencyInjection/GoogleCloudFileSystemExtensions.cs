@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
+using Our.Umbraco.Community.StorageProviders.GoogleCloud.Services;
 using Umbraco.Cms.Core.DependencyInjection;
 
 namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.DependencyInjection;
@@ -32,6 +33,7 @@ public static class GoogleCloudFileSystemExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(name);
 
+        builder.Services.TryAddSingleton<GoogleCloudStorageService>();
         builder.Services.TryAddSingleton<IGoogleCloudStorageFileSystemProvider, GoogleCloudStorageFileSystemProvider>();
 
         OptionsBuilder<GoogleCloudStorageFileSystemOptions> optionsBuilder = builder.Services.AddOptions<GoogleCloudStorageFileSystemOptions>(name)

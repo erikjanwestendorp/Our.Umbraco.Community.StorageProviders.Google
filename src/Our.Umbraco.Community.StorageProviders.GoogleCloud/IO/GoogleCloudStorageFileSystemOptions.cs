@@ -19,8 +19,7 @@ public sealed class GoogleCloudStorageFileSystemOptions
     /// <summary>
     /// Gets or sets the path to the credential file.
     /// </summary>
-    [Required]
-    public required string CredentialPath { get; set; }
+    public string? CredentialPath { get; set; }
 
     /// <summary>
     /// Gets or sets the bucket name.

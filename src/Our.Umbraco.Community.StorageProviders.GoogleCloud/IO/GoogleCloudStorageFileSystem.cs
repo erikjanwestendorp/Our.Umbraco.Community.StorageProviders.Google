@@ -7,8 +7,8 @@ using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
-using Our.Umbraco.Community.StorageProviders.GoogleCloud.Helpers;
 using Microsoft.Extensions.Logging;
+using Our.Umbraco.Community.StorageProviders.GoogleCloud.Services;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
 
@@ -20,8 +20,6 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     private readonly string _requestRootPath;
     private readonly StorageClient _storageClient;
     private readonly string _bucketName;
-    //private readonly GoogleCredential _credential;
-
     private readonly IIOHelper _ioHelper;
     private readonly IOptionsMonitor<GoogleCloudStorageFileSystemOptions> _optionsMonitor;
 
@@ -352,17 +350,9 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     }
 
     /// <inheritdoc />
-    /// <exception cref="System.ArgumentNullException"><paramref name="path" /> is <c>null</c>.</exception>
-    public StorageClient GetStorageClient(string path)
+    public StorageClient GetStorageClient()
     {
-        ArgumentNullException.ThrowIfNull(path);
-
-        const string name = GoogleCloudStorageFileSystemOptions.MediaFileSystemName;
-        GoogleCloudStorageFileSystemOptions options = _optionsMonitor.Get(name);
-
-        GoogleCredential credential = GoogleCloudCredentialHelper.LoadCredential(options.CredentialPath);
-
-        return StorageClient.Create(credential);
+        return _storageClient;
     }
 
     /// <inheritdoc />
