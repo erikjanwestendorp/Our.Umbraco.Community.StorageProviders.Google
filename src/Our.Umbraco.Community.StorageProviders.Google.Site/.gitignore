@@ -480,3 +480,10 @@ umbraco-package-schema.json
 
 # Media files
 /wwwroot/media/
+
+# Ignore all .json files in the specified folder
+*.json
+
+# Except for specific appsettings files
+!appsettings.json
+!appsettings.Development.json
