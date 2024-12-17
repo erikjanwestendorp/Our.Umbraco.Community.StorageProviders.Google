@@ -7,6 +7,7 @@ using Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Resolvers;
+using Umbraco.Extensions;
 
 namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.ImageSharp;
 
@@ -14,7 +15,10 @@ public sealed class GoogleCloudStorageFileSystemImageCache : IImageCache
 {
     public GoogleCloudStorageFileSystemImageCache(IOptionsMonitor<GoogleCloudStorageFileSystemOptions> options, string name, string? containerRootPath)
     {
-        
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(name);
+
+        GoogleCloudStorageFileSystemOptions fileSystemOptions = options.Get(name);
     }
 
     public Task<IImageCacheResolver> GetAsync(string key)
@@ -25,5 +29,12 @@ public sealed class GoogleCloudStorageFileSystemImageCache : IImageCache
     public Task SetAsync(string key, Stream stream, ImageCacheMetadata metadata)
     {
         throw new NotImplementedException();
+    }
+
+    private static string? GetContainerRootPath(string? containerRootPath, GoogleCloudStorageFileSystemOptions? options = null)
+    {
+        var path = containerRootPath ?? options?.ContainerRootPath;
+
+        return string.IsNullOrEmpty(path) ? null : path.EnsureEndsWith('/');
     }
 }
