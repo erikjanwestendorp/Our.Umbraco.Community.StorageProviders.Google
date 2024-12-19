@@ -18,6 +18,7 @@ namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem, IFileProviderFactory
 {
     private readonly string _requestRootPath;
+    private readonly string _bucketRootPath;
     private readonly StorageClient _storageClient;
     private readonly string _bucketName;
     private readonly IIOHelper _ioHelper;
@@ -60,6 +61,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
         ArgumentNullException.ThrowIfNull(contentTypeProvider);
 
         _requestRootPath = EnsureUrlSeparatorChar(requestRootPath).TrimEnd('/');
+        _bucketRootPath = bucketRootPath ?? _requestRootPath;
         _storageClient = storageClient;
         _bucketName = bucketName;
         _ioHelper = ioHelper;
@@ -357,7 +359,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
 
     /// <inheritdoc />
     //public IFileProvider Create() => throw new NotImplementedException();
-    public IFileProvider Create() => new GoogleCloudStorageFileProvider(_storageClient, _optionsMonitor, "/"); //TODO USE OPTIONS for root path?
+    public IFileProvider Create() => new GoogleCloudStorageFileProvider(_storageClient, _optionsMonitor, _bucketRootPath);
 
     private static string GetRequestRootPath(GoogleCloudStorageFileSystemOptions options, IHostingEnvironment hostingEnvironment)
     {
