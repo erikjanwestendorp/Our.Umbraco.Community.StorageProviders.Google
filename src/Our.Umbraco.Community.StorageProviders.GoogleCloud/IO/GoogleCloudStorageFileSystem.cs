@@ -37,7 +37,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     /// <exception cref="System.ArgumentNullException"><paramref name="ioHelper" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="contentTypeProvider" /> is <c>null</c>.</exception>
     public GoogleCloudStorageFileSystem(GoogleCloudStorageFileSystemOptions options, StorageClient storageClient, IHostingEnvironment hostingEnvironment, IIOHelper ioHelper, IContentTypeProvider contentTypeProvider, IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor)
-        : this(GetRequestRootPath(options, hostingEnvironment), storageClient, options.BucketName, ioHelper, contentTypeProvider, optionsMonitor, null) //TODO FIX NULL
+        : this(GetRequestRootPath(options, hostingEnvironment), storageClient, options.BucketName, ioHelper, contentTypeProvider, optionsMonitor, options.ContainerRootPath)
     { }
 
     /// <summary>
