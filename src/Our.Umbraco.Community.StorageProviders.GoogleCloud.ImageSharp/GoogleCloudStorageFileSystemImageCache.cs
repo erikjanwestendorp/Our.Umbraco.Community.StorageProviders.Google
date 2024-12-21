@@ -13,7 +13,7 @@ namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.ImageSharp;
 
 public sealed class GoogleCloudStorageFileSystemImageCache : IImageCache
 {
-    public GoogleCloudStorageFileSystemImageCache(IOptionsMonitor<GoogleCloudStorageFileSystemOptions> options, string name, string? containerRootPath)
+    public GoogleCloudStorageFileSystemImageCache(IOptionsMonitor<GoogleCloudStorageFileSystemOptions> options, string name, string? bucketRootPath)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(name);
@@ -31,9 +31,9 @@ public sealed class GoogleCloudStorageFileSystemImageCache : IImageCache
         throw new NotImplementedException();
     }
 
-    private static string? GetContainerRootPath(string? containerRootPath, GoogleCloudStorageFileSystemOptions? options = null)
+    private static string? GetBucketRootPath(string? bucketRootPath, GoogleCloudStorageFileSystemOptions? options = null)
     {
-        var path = containerRootPath ?? options?.ContainerRootPath;
+        var path = bucketRootPath ?? options?.BucketRootPath;
 
         return string.IsNullOrEmpty(path) ? null : path.EnsureEndsWith('/');
     }
