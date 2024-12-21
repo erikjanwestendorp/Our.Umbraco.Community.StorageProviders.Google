@@ -13,16 +13,16 @@ namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.ImageSharp.Dependen
 
 public static class AddGoogleCloudStorageImageSharpCacheExtensions
 {
-    private const string ContainerRootPath = "cache";
+    private const string BucketRootPath = "cache";
 
     public static IUmbracoBuilder AddGoogleCloudStorageImageSharpCache(this IUmbracoBuilder builder)
-        => builder.AddInternal(GoogleCloudStorageFileSystemOptions.MediaFileSystemName, ContainerRootPath);
+        => builder.AddInternal(GoogleCloudStorageFileSystemOptions.MediaFileSystemName, BucketRootPath);
 
-    internal static IUmbracoBuilder AddInternal(this IUmbracoBuilder builder, string name, string? containerRootPath)
+    internal static IUmbracoBuilder AddInternal(this IUmbracoBuilder builder, string name, string? bucketRootPath)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Services.AddUnique<IImageCache>(provider => new GoogleCloudStorageFileSystemImageCache(provider.GetRequiredService<IOptionsMonitor<GoogleCloudStorageFileSystemOptions>>(), name, containerRootPath));
+        builder.Services.AddUnique<IImageCache>(provider => new GoogleCloudStorageFileSystemImageCache(provider.GetRequiredService<IOptionsMonitor<GoogleCloudStorageFileSystemOptions>>(), name, bucketRootPath));
 
         return builder;
     }

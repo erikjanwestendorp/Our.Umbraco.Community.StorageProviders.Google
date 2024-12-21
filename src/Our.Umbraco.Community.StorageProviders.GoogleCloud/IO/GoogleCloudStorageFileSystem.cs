@@ -2,13 +2,11 @@
 // Original source: https://github.com/umbraco/Umbraco.StorageProviders/blob/develop/src/Umbraco.StorageProviders.AzureBlob/IO/AzureBlobFileSystem.cs
 // Adapted and modified in accordance with the terms of the MIT License.
 
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using Our.Umbraco.Community.StorageProviders.GoogleCloud.Services;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
 
@@ -18,6 +16,7 @@ namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem, IFileProviderFactory
 {
     private readonly string _requestRootPath;
+    private readonly string _bucketRootPath;
     private readonly StorageClient _storageClient;
     private readonly string _bucketName;
     private readonly IIOHelper _ioHelper;
@@ -37,7 +36,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     /// <exception cref="System.ArgumentNullException"><paramref name="ioHelper" /> is <c>null</c>.</exception>
     /// <exception cref="System.ArgumentNullException"><paramref name="contentTypeProvider" /> is <c>null</c>.</exception>
     public GoogleCloudStorageFileSystem(GoogleCloudStorageFileSystemOptions options, StorageClient storageClient, IHostingEnvironment hostingEnvironment, IIOHelper ioHelper, IContentTypeProvider contentTypeProvider, IOptionsMonitor<GoogleCloudStorageFileSystemOptions> optionsMonitor)
-        : this(GetRequestRootPath(options, hostingEnvironment), storageClient, options.BucketName, ioHelper, contentTypeProvider, optionsMonitor, null) //TODO FIX NULL
+        : this(GetRequestRootPath(options, hostingEnvironment), storageClient, options.BucketName, ioHelper, contentTypeProvider, optionsMonitor, options.BucketRootPath)
     { }
 
     /// <summary>
@@ -60,6 +59,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
         ArgumentNullException.ThrowIfNull(contentTypeProvider);
 
         _requestRootPath = EnsureUrlSeparatorChar(requestRootPath).TrimEnd('/');
+        _bucketRootPath = bucketRootPath ?? _requestRootPath;
         _storageClient = storageClient;
         _bucketName = bucketName;
         _ioHelper = ioHelper;
@@ -162,21 +162,22 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(stream);
 
-        var objectExists = _storageClient.ListObjects(_bucketName, path).Any(o => o.Name == path);
+        var fullPath = GetFullPath(path);
+        var objectExists = _storageClient.ListObjects(_bucketName, fullPath).Any(o => o.Name == path);
 
         if (!overrideIfExists && objectExists)
         {
-            throw new InvalidOperationException($"A file at path '{path}' already exists.");
+            throw new InvalidOperationException($"A file at path '{fullPath}' already exists.");
         }
 
-        var contentType = GetContentType(path);
+        var contentType = GetContentType(fullPath);
 
         var uploadOptions = new UploadObjectOptions
         {
             PredefinedAcl = overrideIfExists ? null : PredefinedObjectAcl.BucketOwnerRead
         };
 
-        _storageClient.UploadObject(_bucketName, path, contentType, stream, uploadOptions);
+        _storageClient.UploadObject(_bucketName, fullPath, contentType, stream, uploadOptions);
 
     }
 
@@ -357,7 +358,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
 
     /// <inheritdoc />
     //public IFileProvider Create() => throw new NotImplementedException();
-    public IFileProvider Create() => new GoogleCloudStorageFileProvider(_storageClient, _optionsMonitor, "/"); //TODO USE OPTIONS for root path?
+    public IFileProvider Create() => new GoogleCloudStorageFileProvider(_storageClient, _optionsMonitor, _bucketRootPath);
 
     private static string GetRequestRootPath(GoogleCloudStorageFileSystemOptions options, IHostingEnvironment hostingEnvironment)
     {

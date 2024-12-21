@@ -36,7 +36,7 @@ public sealed class GoogleCloudStorageFileSystemOptions
     /// <summary>
     /// Gets or sets the root path of the container.
     /// </summary>
-    public string? ContainerRootPath { get; set; }
+    public string? BucketRootPath { get; set; }
 
     /// <summary>
     /// Gets or sets the virtual path.
