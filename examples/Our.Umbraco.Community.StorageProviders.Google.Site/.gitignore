@@ -487,3 +487,4 @@ umbraco-package-schema.json
 # Except for specific appsettings files
 !appsettings.json
 !appsettings.Development.json
+!launchSettings.json
