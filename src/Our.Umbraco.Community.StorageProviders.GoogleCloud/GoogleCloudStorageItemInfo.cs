@@ -2,6 +2,7 @@
 using Microsoft.Extensions.FileProviders;
 
 namespace Our.Umbraco.Community.StorageProviders.GoogleCloud;
+
 /// <summary>
 /// Represents a Google Cloud Storage object (file).
 /// </summary>
