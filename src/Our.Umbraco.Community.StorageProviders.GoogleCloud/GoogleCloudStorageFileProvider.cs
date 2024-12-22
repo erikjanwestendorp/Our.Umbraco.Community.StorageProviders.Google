@@ -6,8 +6,8 @@ using Google.Cloud.Storage.V1;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
-using Our.Umbraco.Community.StorageProviders.GoogleCloud.Extensions;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
+using System.Net;
 using Umbraco.Cms.Core;
 using Umbraco.Extensions;
 
@@ -62,10 +62,17 @@ public sealed class GoogleCloudStorageFileProvider : IFileProvider
 
     public IFileInfo GetFileInfo(string subpath)
     {
-        subpath = subpath.RemoveFirstIfEquals('/');
         var path = GetFullPath(subpath);
-        var obj = _storageClient.GetObject(_bucketName, path);
-        return new GoogleCloudStorageItemInfo(_storageClient, _bucketName, obj);
+        try
+        {
+            var obj = _storageClient.GetObject(_bucketName, path);
+            return new GoogleCloudStorageItemInfo(_storageClient, _bucketName, obj);
+
+        }
+        catch (Google.GoogleApiException ex) when (ex.Error.Code == (int)HttpStatusCode.NotFound)
+        {
+            return new NotFoundFileInfo(GoogleCloudStorageItemInfo.ParseName(path));
+        }
     }
 
     public IChangeToken Watch(string filter) => NullChangeToken.Singleton;

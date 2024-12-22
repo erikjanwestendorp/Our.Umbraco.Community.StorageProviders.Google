@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
 using Umbraco.Cms.Core.Hosting;
 using Umbraco.Cms.Core.IO;
+using System.Net;
 
 namespace Our.Umbraco.Community.StorageProviders.GoogleCloud.IO;
 
@@ -94,7 +95,7 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
             var bucket = storageClient.GetBucket(options.BucketName);
             logger.LogInformation("Bucket {Name} already exists.", bucket.Name);
         }
-        catch (Google.GoogleApiException ex) when (ex.Error.Code == 404)
+        catch (Google.GoogleApiException ex) when (ex.Error.Code == (int)HttpStatusCode.NotFound)
         {
             try
             {
