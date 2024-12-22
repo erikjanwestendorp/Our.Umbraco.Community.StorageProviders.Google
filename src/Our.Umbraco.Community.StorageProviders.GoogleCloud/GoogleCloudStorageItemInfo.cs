@@ -36,4 +36,14 @@ public class GoogleCloudStorageItemInfo : IFileInfo
         stream.Seek(0, SeekOrigin.Begin);
         return stream;
     }
+
+    /// <summary>
+    /// Parses the name from the file path.
+    /// </summary>
+    /// <param name="path">The file path.</param>
+    /// <returns>
+    /// The name.
+    /// </returns>
+    internal static string ParseName(string path) => path[(path.LastIndexOf('/') + 1)..];
+
 }
