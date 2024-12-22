@@ -3,7 +3,6 @@
 // Adapted and modified in accordance with the terms of the MIT License.
 
 using System.Collections.Concurrent;
-using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Options;
 using Our.Umbraco.Community.StorageProviders.GoogleCloud.Services;

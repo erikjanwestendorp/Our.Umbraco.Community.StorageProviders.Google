@@ -216,13 +216,13 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     public Stream OpenFile(string path)
     {
         ArgumentNullException.ThrowIfNull(path);
+
         var memoryStream = new MemoryStream();
-        _storageClient.DownloadObject(_bucketName, path, memoryStream);
+        _storageClient.DownloadObject(_bucketName, GetFullPath(path), memoryStream);
 
         memoryStream.Seek(0, SeekOrigin.Begin);
 
         return memoryStream;
-
     }
 
     /// <inheritdoc />
@@ -230,10 +230,9 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     public void DeleteFile(string path)
     {
         ArgumentNullException.ThrowIfNull(path, nameof(path));
-
         try
         {
-            _storageClient.DeleteObject(_bucketName, path);
+            _storageClient.DeleteObject(_bucketName, GetFullPath(path));
         }
         catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
         {
@@ -249,10 +248,10 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
 
         try
         {
-            Google.Apis.Storage.v1.Data.Object storageObject = _storageClient.GetObject(_bucketName, path);
+            var storageObject = _storageClient.GetObject(_bucketName, GetFullPath(path));
             return storageObject != null;
         }
-        catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+        catch (Google.GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.NotFound)
         {
             return false;
         }
@@ -290,7 +289,6 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
 
     /// <inheritdoc />
     /// <exception cref="System.ArgumentNullException"><paramref name="path" /> is <c>null</c>.</exception>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1055:URI-like return values should not be strings", Justification = "This method is inherited from an interface.")]
     public string GetUrl(string? path)
     {
         ArgumentNullException.ThrowIfNull(path);
@@ -304,8 +302,8 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     {
         ArgumentNullException.ThrowIfNull(path);
 
-        Google.Apis.Storage.v1.Data.Object storageObject = _storageClient.GetObject(_bucketName, path);
-        DateTimeOffset? dateTimeOffset = storageObject.UpdatedDateTimeOffset;
+        var storageObject = _storageClient.GetObject(_bucketName, GetFullPath(path));
+        var dateTimeOffset = storageObject.UpdatedDateTimeOffset;
 
         if (dateTimeOffset.HasValue)
         {
@@ -321,8 +319,8 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     {
         ArgumentNullException.ThrowIfNull(path);
 
-        Google.Apis.Storage.v1.Data.Object storageObject = _storageClient.GetObject(_bucketName, path);
-        DateTimeOffset? dateTimeOffset = storageObject.TimeCreatedDateTimeOffset;
+        var storageObject = _storageClient.GetObject(_bucketName, GetFullPath(path));
+        var dateTimeOffset = storageObject.TimeCreatedDateTimeOffset;
 
         if (dateTimeOffset.HasValue)
         {
@@ -338,17 +336,19 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     {
         ArgumentNullException.ThrowIfNull(path);
 
-        Google.Apis.Storage.v1.Data.Object storageObject = _storageClient.GetObject(_bucketName, path);
-        if (storageObject.Size.HasValue)
+        var storageObject = _storageClient.GetObject(_bucketName, GetFullPath(path));
+
+        if (!storageObject.Size.HasValue)
         {
-            if (storageObject.Size.Value > long.MaxValue)
-            {
-                throw new OverflowException("The size of the object exceeds the maximum value for a long.");
-            }
-            return (long)storageObject.Size.Value;
+            throw new InvalidOperationException("The size of the object could not be retrieved.");
         }
 
-        throw new InvalidOperationException("The size of the object could not be retrieved.");
+        if (storageObject.Size.Value > long.MaxValue)
+        {
+            throw new OverflowException("The size of the object exceeds the maximum value for a long.");
+        }
+
+        return (long)storageObject.Size.Value;
     }
 
     /// <inheritdoc />
@@ -358,7 +358,6 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     }
 
     /// <inheritdoc />
-    //public IFileProvider Create() => throw new NotImplementedException();
     public IFileProvider Create() => new GoogleCloudStorageFileProvider(_storageClient, _optionsMonitor, _bucketRootPath);
 
     private static string GetRequestRootPath(GoogleCloudStorageFileSystemOptions options, IHostingEnvironment hostingEnvironment)
@@ -372,15 +371,12 @@ public sealed class GoogleCloudStorageFileSystem : IGoogleCloudStorageFileSystem
     private static string EnsureUrlSeparatorChar(string path)
         => path.Replace("\\", "/", StringComparison.InvariantCultureIgnoreCase);
 
-    private string GetContentType(string path)
+    private static string GetContentType(string path)
     {
-        //TODO IS THIS THE RIGHT PLACE
-        // Implement logic to get content type based on file extension or use a library
-        // For example, you could use Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider
-        var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+        var provider = new FileExtensionContentTypeProvider();
         if (!provider.TryGetContentType(path, out var contentType))
         {
-            contentType = "application/octet-stream"; // default content type if none is found
+            contentType = "application/octet-stream"; 
         }
         return contentType;
     }
