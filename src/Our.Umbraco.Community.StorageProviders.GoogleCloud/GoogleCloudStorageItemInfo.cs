@@ -2,6 +2,7 @@
 using Microsoft.Extensions.FileProviders;
 
 namespace Our.Umbraco.Community.StorageProviders.GoogleCloud;
+
 /// <summary>
 /// Represents a Google Cloud Storage object (file).
 /// </summary>
@@ -19,7 +20,7 @@ public class GoogleCloudStorageItemInfo : IFileInfo
 
         Name = _object.Name;
         Length = (long)_object.Size!;
-        LastModified = _object.Updated ?? DateTimeOffset.UtcNow;
+        LastModified = _object.UpdatedDateTimeOffset ?? DateTimeOffset.UtcNow;
     }
 
     public bool Exists => true;
